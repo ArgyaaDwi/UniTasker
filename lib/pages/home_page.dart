@@ -42,25 +42,130 @@ class _HomePageState extends State<HomePage> {
 
   _showTasks() {
     final List<Map<String, dynamic>> yourTaskList = [
-      {'namaTugas': 'Task 1'},
-      {'namaTugas': 'Task 2'},
-      {'namaTugas': 'Task 3'},
-      {'namaTugas': 'Task 4'},
-      {'namaTugas': 'Task 5'},
+      {
+        'namaMatkul': 'Workshop Aplikasi Berbasis Web',
+        'namaTugas': 'CRUD Laravel',
+        'tanggalPengumpulan': '9/6/2024',
+        'deadline': '23:59'
+      },
+      {
+        'namaMatkul': 'Workshop Aplikasi Berbasis Web',
+        'namaTugas': 'CRUD Laravel',
+        'tanggalPengumpulan': '9/6/2024',
+        'deadline': '23:59'
+      },
     ];
     return Expanded(
-      child: ListView.builder(
-        itemCount: yourTaskList.length,
-        itemBuilder: (context, index) {
-          final task = yourTaskList[index];
-          return Container(
-            width: 100,
-            height: 50,
-            color: Colors.green,
-            margin: const EdgeInsets.all(16),
-            child: Text(task['namaTugas'] ?? ''),
-          );
+      child: GestureDetector(
+        onTap: () {
+          print("Matkul Ditekan");
         },
+        child: ListView.builder(
+          itemCount: yourTaskList.length,
+          itemBuilder: (context, index) {
+            final task = yourTaskList[index];
+            return Card(
+              margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              color: const Color.fromARGB(255, 151, 208, 255),
+              child: ListTile(
+                title: RichText(
+                  text: TextSpan(
+                    text: '${task['namaMatkul']}\n',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      height: 1.5,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: '${task['namaTugas']}\n',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14,
+                          height: 1.5,
+                        ),
+                      ),
+                      TextSpan(
+                        children: [
+                          const WidgetSpan(
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 4.0),
+                              child: Icon(
+                                Icons.calendar_today,
+                                color: Colors.black,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${task['tanggalPengumpulan']}\n',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextSpan(
+                        children: [
+                          const WidgetSpan(
+                            child: Padding(
+                              padding: EdgeInsets.only(right: 4.0),
+                              child: Icon(
+                                Icons.access_time,
+                                color: Colors.black,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                          TextSpan(
+                            text: '${task['deadline']}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              height: 1.5,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                // trailing: Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     IconButton(
+                //       onPressed: () {
+                //         print("Edit button pressed");
+                //       },
+                //       icon: const Icon(
+                //         Icons.edit,
+                //         color: Colors.black,
+                //       ),
+                //     ),
+                //     // IconButton(
+                //     //   onPressed: () {
+                //     //     print("Delete button pressed");
+                //     //   },
+                //     //   icon: const Icon(
+                //     //     Icons.delete,
+                //     //     color: Colors.black,
+                //     //   ),
+                //     // ),
+                //   ],
+                // ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

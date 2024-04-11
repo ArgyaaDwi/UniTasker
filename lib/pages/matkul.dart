@@ -122,94 +122,98 @@ class _MatkulPageState extends State<MatkulPage> {
               ),
             ),
             const SizedBox(
-              height: 35,
+              height: 20,
             ),
             Expanded(
               child: ListView.builder(
                 itemCount: _matkulList.length,
                 itemBuilder: (context, index) {
                   var matkul = _matkulList[index];
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: const Color.fromARGB(255, 151, 208, 255),
-                    child: ListTile(
-                      title: RichText(
-                        text: TextSpan(
-                          text: '${matkul.namaMatkul}\n', // nama matkul
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
-                            height: 1.5,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      color: const Color.fromARGB(255, 151, 208, 255),
+                      child: ListTile(
+                        title: RichText(
+                          text: TextSpan(
+                            text: '${matkul.namaMatkul}\n', // nama matkul
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              height: 1.5,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: '${matkul.namaDosen}\n', // nama dosen
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    '${matkul.hari} (${matkul.jamMulai}-${matkul.jamBerakhir})\n', //  hari beserta jam
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                              TextSpan(
+                                text: matkul.ruangan, // ruangan
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ],
                           ),
+                        ),
+                        // subtitle: const Padding(
+                        //   padding:  EdgeInsets.only(top: 8.0),
+                        //   child:  Text(
+                        //     "Edited: 09/04/2024",
+                        //     style:  TextStyle(
+                        //       fontSize: 10,
+                        //       fontStyle: FontStyle.italic,
+                        //       color: Colors.grey,
+                        //     ),
+                        //   ),
+                        // ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            TextSpan(
-                              text: '${matkul.namaDosen}\n', // nama dosen
-                              style: const TextStyle(
+                            IconButton(
+                              onPressed: () {
+                                _editFormDialog(context);
+                                _editMatkul(context, _matkulList[index].id);
+                              },
+                              icon: const Icon(
+                                Icons.edit,
                                 color: Colors.black,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                height: 1.5,
                               ),
                             ),
-                            TextSpan(
-                              text:
-                                  '${matkul.hari} (${matkul.jamMulai}-${matkul.jamBerakhir})\n', //  hari beserta jam
-                              style: const TextStyle(
+                            IconButton(
+                              onPressed: () {
+                                _deleteFormDialog(
+                                    context, _matkulList[index].id);
+                              },
+                              icon: const Icon(
+                                Icons.delete,
                                 color: Colors.black,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                height: 1.5,
-                              ),
-                            ),
-                            TextSpan(
-                              text: matkul.ruangan, // ruangan
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                height: 1.5,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      // subtitle: const Padding(
-                      //   padding:  EdgeInsets.only(top: 8.0),
-                      //   child:  Text(
-                      //     "Edited: 09/04/2024",
-                      //     style:  TextStyle(
-                      //       fontSize: 10,
-                      //       fontStyle: FontStyle.italic,
-                      //       color: Colors.grey,
-                      //     ),
-                      //   ),
-                      // ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () {
-                              _editFormDialog(context);
-                              _editMatkul(context, _matkulList[index].id);
-                            },
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.black,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _deleteFormDialog(context, _matkulList[index].id);
-                            },
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                   );
