@@ -18,14 +18,41 @@ class DatabaseConnection {
 
   Future<void> _onCreateDb(Database database, int version) async {
     try {
+      // Tabel matkul
       await database.execute(
         '''
-CREATE TABLE matkul(id INTEGER PRIMARY KEY, namaMatkul TEXT, namaDosen TEXT, hari TEXT, jamMulai TEXT, jamBerakhir TEXT, ruangan TEXT)
+CREATE TABLE matkul(
+  id INTEGER PRIMARY KEY,
+  namaMatkul TEXT,
+  namaDosen TEXT,
+  hari TEXT,
+  jamMulai TEXT,
+  jamBerakhir TEXT,
+  ruangan TEXT
+)
+''',
+      );
+
+      // Tabel tugas
+      await database.execute(
+        '''
+CREATE TABLE tugas (
+  id INTEGER PRIMARY KEY,
+  id_matkul INTEGER,
+  namaTugas TEXT,
+  deskripsi TEXT,
+  tanggalPengumpulan TEXT,
+  deadline TEXT,
+  isDone INTEGER,
+  createdAt TEXT,
+  updatedAt TEXT,
+  FOREIGN KEY (id_matkul) REFERENCES matkul(id)
+)
 ''',
       );
     } catch (error) {
       print("Error occurred while creating table: $error");
     }
-    return Future.value(); 
+    return Future.value();
   }
 }

@@ -16,6 +16,7 @@ class Repository {
     return _database;
   }
 
+  //Matkul
   Future<dynamic> insertDataMatkul(table, Map<String, dynamic> data) async {
     var connection = await database;
     return await connection?.insert(table, data);
@@ -42,4 +43,33 @@ class Repository {
     return await connection
         ?.rawDelete("DELETE FROM matkul WHERE id = ?", [itemId]);
   }
+
+  //Tugas
+  Future<dynamic> insertDataTugas(table, Map<String, dynamic> data) async {
+    var connection = await database;
+    return await connection?.insert(table, data);
+  }
+
+  Future<dynamic> readDataTugas(table) async {
+    var connection = await database;
+    return await connection?.query(table);
+  }
+
+  Future<dynamic> readDataTugasById(table, itemId) async {
+    var connection = await database;
+    return await connection?.query(table, where: 'id=?', whereArgs: [itemId]);
+  }
+
+  Future<dynamic> updateDataTugas(table, data) async {
+    var connection = await database;
+    return await connection
+        ?.update(table, data, where: 'id=?', whereArgs: [data['id']]);
+  }
+
+  Future<dynamic> deleteDataTugas(table, itemId) async {
+    var connection = await database;
+    return await connection
+        ?.rawDelete("DELETE FROM tugas WHERE id = ?", [itemId]);
+  }
+  
 }

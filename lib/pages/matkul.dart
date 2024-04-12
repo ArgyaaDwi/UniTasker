@@ -565,6 +565,7 @@ class _MatkulPageState extends State<MatkulPage> {
       context: context,
       builder: (param) {
         return AlertDialog(
+          // backgroundColor: Colors.white,
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context),

@@ -1,36 +1,51 @@
-import 'package:manajemen_tugas/models/matkul.dart';
-
-class Tugas{
+class Tugas {
   int? id;
-  Matkul? namaMatkul;
+  int? idMatkul;
   String? namaTugas;
   String? deskripsi;
   String? tanggalPengumpulan;
-  String? deadLine;
-  bool? isDone;
+  String? deadline;
+  int? isDone;
+  String? createdAt; 
+  String? updatedAt; 
 
   Tugas({
     this.id,
-    this.namaMatkul,
+    this.idMatkul,
     this.namaTugas,
     this.deskripsi,
     this.tanggalPengumpulan,
-    this.deadLine,
+    this.deadline,
     this.isDone,
-
+    this.createdAt,
+    this.updatedAt,
   });
 
-  Map<String, dynamic> tugasMap(){
-    var mappings = <String, dynamic>{};
-    mappings['id'] = id;
-    mappings['namaMatkul'] = namaMatkul;
-    mappings['namaTugas'] = namaTugas;
-    mappings['deskripsi'] = deskripsi;
-    mappings['tanggalPengumpulan'] = tanggalPengumpulan;
-    mappings['deadLine'] = deadLine;
-    mappings['isDone'] = isDone;
+  Map<String, dynamic> tugasMap() {
+    return {
+      'id': id,
+      'id_matkul': idMatkul,
+      'namaTugas': namaTugas,
+      'deskripsi': deskripsi,
+      'tanggalPengumpulan': tanggalPengumpulan,
+      'deadline': deadline,
+      'isDone': isDone,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+    };
+  }
 
-    return mappings;
+  factory Tugas.fromMap(Map<String, dynamic> map) {
+    return Tugas(
+      id: map['id'],
+      idMatkul: map['id_matkul'],
+      namaTugas: map['namaTugas'],
+      deskripsi: map['deskripsi'],
+      tanggalPengumpulan: map['tanggalPengumpulan'],
+      deadline: map['deadline'],
+      isDone: map['isDone'],
+      createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
+    );
   }
 }
-
