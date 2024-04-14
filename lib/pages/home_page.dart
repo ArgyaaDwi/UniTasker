@@ -16,6 +16,7 @@ import 'package:manajemen_tugas/widgets/button.dart';
 import 'package:manajemen_tugas/widgets/drawer_navigation.dart';
 import 'package:manajemen_tugas/models/tugas.dart';
 import 'package:manajemen_tugas/services/tugas_service.dart';
+import 'package:manajemen_tugas/widgets/edit_task.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -357,12 +358,44 @@ class _HomePageState extends State<HomePage> {
                         }
                       },
                     ),
-                    SizedBox(height: 10),
-                    _buildTaskButton('Edit', Color.fromARGB(255, 51, 139, 211),
-                        () {
-                      print('Task 2 deleted');
+                    const SizedBox(height: 10),
+                    _buildTaskButton(
+                        'Edit', const Color.fromARGB(255, 51, 139, 211),
+                        () async {
+                      try {
+                        var selectedTaskId = task.id;
+                        print('Selected Task ID: $selectedTaskId');
+                        var result =
+                            await _tugasService.readTugasById(selectedTaskId);
+                        if (result != null) {
+                          var tugas = Tugas(
+                            id: result['id'],
+                            matkulNama: result['matkulNama'],
+                            namaTugas: result['namaTugas'],
+                            deskripsi: result['deskripsi'],
+                            tanggalPengumpulan: result['tanggalPengumpulan'],
+                            deadline: result['deadline'],
+                            isDone: result['isDone'],
+                            createdAt: result['createdAt'],
+                            updatedAt: result['updatedAt'],
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EditTask(task: tugas),
+                            ),
+                          ).then((_) {
+                            // Pembaruan data hanya dilakukan setelah selesai mengedit tugas
+                            getAllTugas();
+                          });
+                        } else {
+                          print('Data tugas tidak ditemukan');
+                        }
+                      } catch (e) {
+                        print('Terjadi Kesalahan $e');
+                      }
                     }),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     _buildTaskButton(
                         'Delete', const Color.fromARGB(255, 180, 28, 17),
                         () async {

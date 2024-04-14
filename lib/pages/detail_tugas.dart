@@ -168,7 +168,7 @@ import 'package:manajemen_tugas/models/tugas.dart';
 class DetailTugas extends StatefulWidget {
   final Tugas? task;
 
-  const DetailTugas({Key? key, required this.task}) : super(key: key);
+  const DetailTugas({super.key, required this.task});
 
   @override
   _DetailTugasState createState() => _DetailTugasState();
