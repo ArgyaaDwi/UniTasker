@@ -1,6 +1,6 @@
 class Tugas {
   int? id;
-  int? idMatkul;
+  String? matkulNama;
   String? namaTugas;
   String? deskripsi;
   String? tanggalPengumpulan;
@@ -11,7 +11,7 @@ class Tugas {
 
   Tugas({
     this.id,
-    this.idMatkul,
+    this.matkulNama,
     this.namaTugas,
     this.deskripsi,
     this.tanggalPengumpulan,
@@ -24,7 +24,7 @@ class Tugas {
   Map<String, dynamic> tugasMap() {
     return {
       'id': id,
-      'id_matkul': idMatkul,
+      'matkulNama': matkulNama,
       'namaTugas': namaTugas,
       'deskripsi': deskripsi,
       'tanggalPengumpulan': tanggalPengumpulan,
@@ -38,7 +38,7 @@ class Tugas {
   factory Tugas.fromMap(Map<String, dynamic> map) {
     return Tugas(
       id: map['id'],
-      idMatkul: map['id_matkul'],
+      matkulNama: map['matkulNama'],
       namaTugas: map['namaTugas'],
       deskripsi: map['deskripsi'],
       tanggalPengumpulan: map['tanggalPengumpulan'],

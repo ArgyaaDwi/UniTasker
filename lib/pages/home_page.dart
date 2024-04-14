@@ -6,12 +6,13 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:manajemen_tugas/models/matkul.dart';
+import 'package:manajemen_tugas/pages/detail_tugas.dart';
 import 'package:manajemen_tugas/pages/theme.dart';
 import 'package:manajemen_tugas/repositories/repository.dart';
 import 'package:manajemen_tugas/services/matkul_service.dart';
 import 'package:manajemen_tugas/widgets/add_task_bar.dart';
 import 'package:manajemen_tugas/widgets/button.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:manajemen_tugas/widgets/drawer_navigation.dart';
 import 'package:manajemen_tugas/models/tugas.dart';
 import 'package:manajemen_tugas/services/tugas_service.dart';
@@ -24,29 +25,52 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String? _tanggalPengumpulan;
+
   var tugas;
   var matkul;
   DateTime _selectedDate = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Repository _repository;
   final _tugas = Tugas();
-  final _tugasService = TugasService();
+  late TugasService _tugasService;
   final _matkul = Matkul();
   final _matkulService = MatkulService();
-  List<Map<String, dynamic>> _taskList = [];
-
-  _loadTugas() async {
-    var tasks = await _repository.readDataTugas('tugas');
-    setState(() {
-      _taskList = tasks;
-    });
-  }
-
+  late List<Tugas> _tugasList;
   @override
   void initState() {
     super.initState();
+    _tugasList = [];
+    _tugasService = TugasService();
     _repository = Repository();
-    _loadTugas();
+    getAllTugas();
+  }
+
+  Future<void> getAllTugas() async {
+    var tugasData = await _tugasService.readTugas();
+    var tugasList = <Tugas>[];
+    tugasData.forEach((data) {
+      var tugas = Tugas(
+        id: data['id'],
+        matkulNama: data['matkulNama'],
+        namaTugas: data['namaTugas'],
+        deskripsi: data['deskripsi'],
+        tanggalPengumpulan: data['tanggalPengumpulan'],
+        deadline: data['deadline'],
+        isDone: data['isDone'],
+        createdAt: data['createdAt'],
+        updatedAt: data['updatedAt'],
+      );
+      tugasList.add(tugas);
+    });
+    setState(() {
+      _tugasList = tugasList;
+    });
+  }
+
+  _showSuccessSnackBar(message) {
+    var _snackBar = SnackBar(content: message);
+    ScaffoldMessenger.of(context).showSnackBar(_snackBar);
   }
 
   @override
@@ -73,26 +97,27 @@ class _HomePageState extends State<HomePage> {
   _showTasks() {
     return Expanded(
       child: ListView.builder(
-        itemCount: _taskList.length,
+        itemCount: _tugasList.length,
         itemBuilder: (context, index) {
-          final task = _taskList[index];
-          //  _matkulService.getMatkulById(task['id_matkul']);
-          // // Anda dapat menunggu respons dari layanan dan kemudian menggunakan informasi mata kuliah yang diterima:
-          // // final namaMatkul = matkul['namaMatkul'];
+          final task = _tugasList[index];
+          Color itemColor = task.isDone == 0
+              ? Color.fromARGB(255, 151, 208, 255)
+              : Color.fromARGB(255, 173, 243, 181);
+
           return GestureDetector(
             onTap: () {
-              _showBottomSheet(context, task);
+              _showBottomSheet(context, task, index);
             },
             child: Card(
               margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
-              color: const Color.fromARGB(255, 151, 208, 255),
+              color: itemColor,
               child: ListTile(
                 title: RichText(
                   text: TextSpan(
-                    text: '${task['namaMatkul']}\n',
+                    text: '${task.matkulNama}\n',
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -101,7 +126,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     children: [
                       TextSpan(
-                        text: '${task['namaTugas']}\n',
+                        text: '${task.namaTugas}\n',
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.normal,
@@ -109,6 +134,16 @@ class _HomePageState extends State<HomePage> {
                           height: 1.5,
                         ),
                       ),
+                      // TextSpan(
+                      //   text: '${task.isDone == 0 ? "Belum" : "Selesai"}\n',
+                      //   style: const TextStyle(
+                      //     color: Colors.black,
+                      //     fontWeight: FontWeight.normal,
+                      //     fontSize: 14,
+                      //     height: 1.5,
+                      //   ),
+                      // ),
+
                       TextSpan(
                         children: [
                           const WidgetSpan(
@@ -122,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           TextSpan(
-                            text: '${task['tanggalPengumpulan']}\n',
+                            text: '${task.tanggalPengumpulan}\n',
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.normal,
@@ -145,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           TextSpan(
-                            text: '${task['deadline']}',
+                            text: '${task.deadline}',
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -181,7 +216,11 @@ class _HomePageState extends State<HomePage> {
               fontSize: 20, fontWeight: FontWeight.w600, color: Colors.grey),
         ),
         onDateChange: (date) {
-          _selectedDate = date;
+          setState(() {
+            _selectedDate = date;
+            _tanggalPengumpulan = DateFormat.yMMMMEEEEd('id_ID').format(date);
+            print('Tanggal yang dipilih: $_selectedDate');
+          });
         },
       ),
     );
@@ -193,22 +232,28 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  DateFormat.yMMMMd('id_ID').format(DateTime.now()),
-                  style: subHeadingStyle,
-                ),
-                Text(
-                  "Hari Ini",
-                  style: subHeadingStyle1,
-                ),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                DateFormat.yMMMMd('id_ID').format(DateTime.now()),
+                style: subHeadingStyle,
+              ),
+              Text(
+                "Hari Ini",
+                style: subHeadingStyle1,
+              ),
+            ],
           ),
-          MyButton(label: "Tambah Tugas", onTap: () => Get.to(AddTaskPage()))
+          MyButton(
+            label: "Tambah Tugas",
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddTaskPage()),
+              ).then((_) => getAllTugas());
+            },
+          ),
         ],
       ),
     );
@@ -226,12 +271,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _showBottomSheet(BuildContext context, Map<String, dynamic> task) {
+  _showBottomSheet(BuildContext context, Tugas task, int index) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 320,
+          height: 390,
           width: double.infinity,
           color: Colors.white,
           child: Column(
@@ -249,37 +294,87 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    _buildDeleteTaskButton(
-                        'Tandai Selesai', Color.fromARGB(255, 87, 255, 93), () {
-                      // Handle delete action for Task 1
-                      print('Task 1 deleted');
-                    }),
+                    _buildTaskButton(
+                      'Detail Tugas',
+                      const Color.fromARGB(255, 57, 89, 249),
+                      () async {
+                        try {
+                          var selectedTaskId = task.id;
+                          print('Selected Task ID: $selectedTaskId');
+                          var result =
+                              await _tugasService.readTugasById(selectedTaskId);
+                          if (result != null) {
+                            var tugas = Tugas(
+                              id: result['id'],
+                              matkulNama: result['matkulNama'],
+                              namaTugas: result['namaTugas'],
+                              deskripsi: result['deskripsi'],
+                              tanggalPengumpulan: result['tanggalPengumpulan'],
+                              deadline: result['deadline'],
+                              isDone: result['isDone'],
+                              createdAt: result['createdAt'],
+                              updatedAt: result['updatedAt'],
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailTugas(task: tugas),
+                              ),
+                            );
+                          } else {
+                            print('Data tugas tidak ditemukan');
+                          }
+                        } catch (e) {
+                          print('Terjadi Kesalahan $e');
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTaskButton(
+                      task.isDone == 0 ? 'Tandai Selesai' : 'Belum Selesai',
+                      task.isDone == 0
+                          ? Color.fromARGB(255, 87, 255, 93)
+                          : Colors.red,
+                      () async {
+                        try {
+                          var selectedTask = _tugasList[index];
+                          if (selectedTask.isDone == 0) {
+                            // Jika belum selesai, tandai sebagai selesai
+                            selectedTask.isDone = 1;
+                            task.updatedAt = DateTime.now().toString();
+                          } else {
+                            // Jika selesai, tandai sebagai belum selesai
+                            selectedTask.isDone = 0;
+                            task.updatedAt = DateTime.now().toString();
+                          }
+                          await _tugasService.updateTugas(selectedTask);
+                          Navigator.pop(context);
+                          setState(() {});
+                          print(
+                              'Tugas "${selectedTask.namaTugas}" telah diperbarui.');
+                        } catch (e) {
+                          print('Terjadi kesalahan saat memperbarui tugas: $e');
+                        }
+                      },
+                    ),
                     SizedBox(height: 10),
-                    _buildDeleteTaskButton(
-                        'Edit', Color.fromARGB(255, 14, 91, 153), () {
-                      // Handle delete action for Task 2
+                    _buildTaskButton('Edit', Color.fromARGB(255, 51, 139, 211),
+                        () {
                       print('Task 2 deleted');
                     }),
                     SizedBox(height: 10),
-                    _buildDeleteTaskButton(
+                    _buildTaskButton(
                         'Delete', const Color.fromARGB(255, 180, 28, 17),
                         () async {
-                      // Handle delete action for Task 3
                       try {
-                        // Ambil id tugas yang akan dihapus
-                        int taskId = task['id'];
-
-                        // Hapus data tugas dari database
+                        var taskId = task.id; // Akses id dari map
                         await _repository.deleteDataTugas('tugas', taskId);
-
-                        // Cetak pesan bahwa tugas berhasil dihapus
                         print('Task $taskId deleted');
-
-                        // Muat ulang daftar tugas di HomePage untuk menampilkan perubahan
-                        _loadTugas();
+                        getAllTugas();
                         Navigator.pop(context);
+                        _showSuccessSnackBar(
+                            const Text('Berhasil Menghapus Data'));
                       } catch (e) {
-                        // Tangani kesalahan jika terjadi
                         print(
                             'Terjadi kesalahan saat menghapus data tugas: $e');
                       }
@@ -330,8 +425,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDeleteTaskButton(
-      String buttonText, Color backgroundColor, Function() onPressed) {
+  Widget _buildTaskButton(
+    String buttonText,
+    Color backgroundColor,
+    Function() onPressed,
+  ) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(

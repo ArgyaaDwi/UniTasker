@@ -3,7 +3,9 @@ import 'package:manajemen_tugas/pages/home_page.dart';
 import 'package:manajemen_tugas/pages/matkul.dart';
 import 'package:manajemen_tugas/pages/theme.dart';
 import 'package:get/get.dart';
+import 'package:manajemen_tugas/pages/tugasby_matkul.dart';
 import 'package:manajemen_tugas/services/matkul_service.dart';
+import 'package:manajemen_tugas/pages/tugasby_matkul.dart';
 
 class DrawerNavigation extends StatefulWidget {
   const DrawerNavigation({super.key});
@@ -26,10 +28,18 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
     var matkul = await _matkulService.readMatkul();
     matkul.forEach((matkul) {
       setState(() {
-        _matkulList.add(ListTile(
-          title: Text(
-            matkul['namaMatkul'],
-            style: TextStyle(fontSize: 14),
+        _matkulList.add(InkWell(
+          onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TugasByMatkul(
+                        matkul: matkul['matkulNama'],
+                      ))),
+          child: ListTile(
+            title: Text(
+              matkul['namaMatkul'],
+              style: TextStyle(fontSize: 14),
+            ),
           ),
         ));
       });

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:manajemen_tugas/models/tugas.dart';
 import 'package:manajemen_tugas/pages/theme.dart';
 import 'package:manajemen_tugas/repositories/repository.dart';
 import 'package:manajemen_tugas/services/matkul_service.dart';
+import 'package:manajemen_tugas/services/tugas_service.dart';
 import 'package:manajemen_tugas/widgets/input_field.dart';
+import 'package:manajemen_tugas/pages/home_page.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({super.key});
@@ -21,28 +24,58 @@ class _AddTaskPageState extends State<AddTaskPage> {
   String _deadline = "23.59";
   final _namaTugasController = TextEditingController();
   final _deskripsiTugasController = TextEditingController();
+  final _deadlineTugasController = TextEditingController();
+  late TugasService _tugasService;
+
   var _selectedValue;
   late Repository _repository;
   List<DropdownMenuItem<String>> _matkul = [];
+  late List<Tugas> _tugasList;
+
   @override
   void initState() {
     super.initState();
     _repository = Repository();
+    _tugasService = TugasService();
     _loadMatkul();
+    _tugasList = [];
+    getAllTugas();
     initializeDateFormatting('id_ID', null);
   }
 
-  _loadMatkul() async {
-    var _matkulService = await MatkulService();
-    var matkul = await _matkulService.readMatkul();
+  Future<void> getAllTugas() async {
+    var tugasData = await _tugasService.readTugas();
+    var tugasList = <Tugas>[];
+    tugasData.forEach((data) {
+      var tugas = Tugas(
+        id: data['id'],
+        matkulNama: data['matkulNama'],
+        namaTugas: data['namaTugas'],
+        deskripsi: data['deskripsi'],
+        tanggalPengumpulan: data['tanggalPengumpulan'],
+        deadline: data['deadline'],
+        isDone: data['isDone'],
+        createdAt: data['createdAt'],
+        updatedAt: data['updatedAt'],
+      );
+      tugasList.add(tugas);
+    });
     setState(() {
-      _matkul.clear(); // Bersihkan list sebelum menambahkan item baru
-      matkul.forEach((matkul) {
+      _tugasList = tugasList;
+    });
+  }
+
+  _loadMatkul() async {
+    var _matkulService = MatkulService();
+    var matkulList = await _matkulService.readMatkul();
+    matkulList.forEach((matkul) {
+      setState(() {
         _matkul.add(
           DropdownMenuItem(
-            value: jsonEncode(
-                {'id': matkul['id'], 'namaMatkul': matkul['namaMatkul']}),
-            child: Text(matkul['namaMatkul']),
+            value: matkul['namaMatkul'],
+            child: Text(
+              matkul['namaMatkul'],
+            ),
           ),
         );
       });
@@ -91,6 +124,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
                     _selectedValue = value;
                   });
                 },
+                onTap: () {
+                  print(_selectedValue);
+                },
               ),
               MyInputField(
                 title: "Nama Tugas",
@@ -136,59 +172,32 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      Map<String, dynamic>? selectedValue;
-                      if (_selectedValue != null &&
-                          _selectedValue is Map<String, dynamic>) {
-                        selectedValue = _selectedValue as Map<String, dynamic>;
-                      }
-
-                      int? idMatkul = selectedValue?['id'];
-                      String? namaTugas = _namaTugasController.text;
-                      String? deskripsi = _deskripsiTugasController.text;
+                      var tugasObject = Tugas();
+                      tugasObject.matkulNama = _selectedValue.toString();
+                      tugasObject.namaTugas = _namaTugasController.text;
+                      tugasObject.deskripsi = _deskripsiTugasController.text;
                       String? tanggalPengumpulan =
                           DateFormat.yMMMMEEEEd('id_ID').format(_selectedDate);
                       String? deadline = _deadline;
-                      DateTime now = DateTime.now();
-                      String createdAt = DateTime.now().toString();
-                      String updatedAt = DateTime.now().toString();
 
-                      // Menyiapkan data tugas yang akan dimasukkan
-                      Map<String, dynamic> newTask = {
-                        'id_matkul': idMatkul,
-                        'namaTugas': namaTugas,
-                        'deskripsi': deskripsi,
-                        'tanggalPengumpulan': tanggalPengumpulan,
-                        'deadline': deadline,
-                        'isDone': 0, // Default isDone nya 0
-                        'createdAt': createdAt,
-                        'updatedAt': updatedAt,
-                      };
+                      tugasObject.tanggalPengumpulan = tanggalPengumpulan;
+                      tugasObject.deadline = deadline;
 
-                      try {
-                        // Memasukkan data tugas ke dalam database
-                        int insertedId =
-                            await _repository.insertDataTugas('tugas', newTask);
-
-                        // Jika berhasil, cetak pesan berhasil
-                        print(
-                            'Data tugas berhasil ditambahkan dengan ID: $insertedId');
-                      } catch (e) {
-                        // Jika terjadi kesalahan, cetak pesan kesalahan
-                        print(
-                            'Terjadi kesalahan saat menambahkan data tugas: $e');
-                      }
-                      _loadMatkul().then((_) {
-                        Navigator.pop(context);
-                      });
+                      tugasObject.isDone = 0;
+                      tugasObject.createdAt = DateTime.now().toString();
+                      tugasObject.updatedAt = DateTime.now().toString();
+                      var _tugasService = TugasService();
+                      var result = await _tugasService.saveTugas(tugasObject);
+                      print(result);
+                      Navigator.pop(context);
+                      getAllTugas();
                       _showSuccessSnackBar(const Text('Berhasil Upload Data'));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                            2), // Atur border radius di sini
+                        borderRadius: BorderRadius.circular(2),
                       ),
-                      backgroundColor: Colors
-                          .blue, // Atur warna latar belakang tombol di sini
+                      backgroundColor: Colors.blue,
                     ),
                     child: Text(
                       "Tambah",

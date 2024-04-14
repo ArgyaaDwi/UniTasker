@@ -20,13 +20,13 @@ class MatkulService {
   //Edit
   Future<dynamic> readMatkulById(matkulId) async {
     return await _repository.readDataById('matkul', matkulId);
-}
+  }
 
-  Future<dynamic> updateMatkul(Matkul matkul) async{
+  Future<dynamic> updateMatkul(Matkul matkul) async {
     return await _repository.updateData('matkul', matkul.matkulMap());
   }
 
-  Future<dynamic> deleteMatkul(matkulId) async{
+  Future<dynamic> deleteMatkul(matkulId) async {
     return await _repository.deleteData('matkul', matkulId);
   }
 }

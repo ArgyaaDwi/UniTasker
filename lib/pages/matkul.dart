@@ -59,7 +59,6 @@ class _MatkulPageState extends State<MatkulPage> {
       _matkulList.add(matkulModel);
     });
 
-    // panggil setState setelah perubahan selesai dilakukan
     setState(() {});
   }
 

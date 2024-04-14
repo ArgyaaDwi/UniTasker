@@ -32,10 +32,18 @@ class Repository {
     return await connection?.query(table, where: 'id=?', whereArgs: [itemId]);
   }
 
-  Future<dynamic> updateData(table, data) async {
-    var connection = await database;
-    return await connection
-        ?.update(table, data, where: 'id=?', whereArgs: [data['id']]);
+ Future<void> updateData(String table, Map<String, dynamic> data) async {
+    try {
+      await _database?.update(
+        table,
+        data,
+        where: 'id = ?',
+        whereArgs: [data['id']],
+      );
+    } catch (e) {
+      // Menangani kesalahan jika terjadi
+      throw Exception('Terjadi kesalahan saat memperbarui data: $e');
+    }
   }
 
   Future<dynamic> deleteData(table, itemId) async {
@@ -71,5 +79,10 @@ class Repository {
     return await connection
         ?.rawDelete("DELETE FROM tugas WHERE id = ?", [itemId]);
   }
-  
+
+  Future<dynamic> readTugasByMatkul(table, columnName, columnValue) async {
+    var connection = await database;
+    return await connection
+        ?.query(table, where: '$columnName=?', whereArgs: [columnValue]);
+  }
 }

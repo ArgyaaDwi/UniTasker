@@ -38,15 +38,14 @@ CREATE TABLE matkul(
         '''
 CREATE TABLE tugas (
   id INTEGER PRIMARY KEY,
-  id_matkul INTEGER,
+  matkulNama TEXT,
   namaTugas TEXT,
   deskripsi TEXT,
   tanggalPengumpulan TEXT,
   deadline TEXT,
   isDone INTEGER,
   createdAt TEXT,
-  updatedAt TEXT,
-  FOREIGN KEY (id_matkul) REFERENCES matkul(id)
+  updatedAt TEXT
 )
 ''',
       );
