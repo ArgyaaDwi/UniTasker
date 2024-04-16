@@ -338,9 +338,9 @@ class _DetailTugasState extends State<DetailTugas> {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios),
         onPressed: () {
-          // Navigator.push(
-          //     context, MaterialPageRoute(builder: (context) => HomePage()));
-          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => HomePage()));
+          // Navigator.popUntil(context, (route) => route.isFirst);
         },
       ),
     );

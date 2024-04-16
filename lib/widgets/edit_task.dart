@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:manajemen_tugas/models/tugas.dart';
+import 'package:manajemen_tugas/pages/home_page.dart';
 import 'package:manajemen_tugas/pages/theme.dart';
 import 'package:manajemen_tugas/repositories/repository.dart';
 import 'package:manajemen_tugas/services/matkul_service.dart';
@@ -81,14 +82,21 @@ class _EditTaskState extends State<EditTask> {
   _loadMatkul() async {
     var _matkulService = MatkulService();
     var matkulList = await _matkulService.readMatkul();
-    matkulList.forEach((matkul) {
+
+    // Buat Set untuk menyimpan nilai unik
+    var uniqueMatkulValues =
+        matkulList.map((matkul) => matkul['namaMatkul']).toSet().toList();
+
+    // Bersihkan daftar item dropdown sebelum menambahkan nilai baru
+    _matkul.clear();
+
+    // Tambahkan nilai-nilai unik ke dalam daftar item dropdown
+    uniqueMatkulValues.forEach((matkul) {
       setState(() {
         _matkul.add(
           DropdownMenuItem(
-            value: matkul['namaMatkul'],
-            child: Text(
-              matkul['namaMatkul'],
-            ),
+            value: matkul,
+            child: Text(matkul),
           ),
         );
       });
@@ -140,6 +148,7 @@ class _EditTaskState extends State<EditTask> {
                 onTap: () {
                   print(_selectedValue);
                 },
+                isExpanded: true,
               ),
               MyInputField(
                 title: "Nama Tugas",
@@ -154,6 +163,7 @@ class _EditTaskState extends State<EditTask> {
               MyInputField(
                 title: "Tanggal Pengumpulan",
                 hint: DateFormat.yMMMEd().format(_selectedDate),
+                controller: _tanggalPengumpulanTugasController,
                 widget: IconButton(
                   icon: const Icon(
                     Icons.calendar_month_outlined,
@@ -179,7 +189,7 @@ class _EditTaskState extends State<EditTask> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               ButtonBar(
                 children: [
@@ -200,7 +210,10 @@ class _EditTaskState extends State<EditTask> {
                       try {
                         await _tugasService.updateTugas(
                             tugasObject); // Memanggil metode updateTugas dari TugasService
-                        Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => HomePage()));
                         getAllTugas();
                         _showSuccessSnackBar(Text('Berhasil Update Data'));
                       } catch (e) {
@@ -217,9 +230,9 @@ class _EditTaskState extends State<EditTask> {
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color.fromARGB(255, 51, 139, 211),
                     ),
                     child: Text(
                       "Update",

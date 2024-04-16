@@ -127,6 +127,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 onTap: () {
                   print(_selectedValue);
                 },
+                isExpanded: true,
               ),
               MyInputField(
                 title: "Nama Tugas",
@@ -166,7 +167,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
               ),
               const SizedBox(
-                height: 50,
+                height: 30,
               ),
               ButtonBar(
                 children: [
@@ -189,18 +190,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       var _tugasService = TugasService();
                       var result = await _tugasService.saveTugas(tugasObject);
                       print(result);
-                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
                       getAllTugas();
                       _showSuccessSnackBar(const Text('Berhasil Upload Data'));
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Color.fromARGB(255, 46, 127, 55),
                     ),
                     child: Text(
-                      "Tambah",
+                      "Upload",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

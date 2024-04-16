@@ -29,14 +29,14 @@ CREATE TABLE matkul(
   jamMulai TEXT,
   jamBerakhir TEXT,
   ruangan TEXT
+
 )
 ''',
       );
 
       // Tabel tugas
-      await database.execute(
-        '''
-CREATE TABLE tugas (
+      await database.execute('''
+ CREATE TABLE tugas (
   id INTEGER PRIMARY KEY,
   matkulNama TEXT,
   namaTugas TEXT,
@@ -47,8 +47,7 @@ CREATE TABLE tugas (
   createdAt TEXT,
   updatedAt TEXT
 )
-''',
-      );
+''');
     } catch (error) {
       print("Error occurred while creating table: $error");
     }

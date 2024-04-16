@@ -33,7 +33,7 @@ class _DrawerNavigationState extends State<DrawerNavigation> {
               context,
               MaterialPageRoute(
                   builder: (context) => TugasByMatkul(
-                        matkul: matkul['matkulNama'],
+                        matkul: matkul['namaMatkul'],
                       ))),
           child: ListTile(
             title: Text(

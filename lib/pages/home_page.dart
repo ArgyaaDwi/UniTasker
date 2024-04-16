@@ -219,7 +219,10 @@ class _HomePageState extends State<HomePage> {
         onDateChange: (date) {
           setState(() {
             _selectedDate = date;
-            _tanggalPengumpulan = DateFormat.yMMMMEEEEd('id_ID').format(date);
+            // _tanggalPengumpulan = DateFormat.yMMMMEEEEd('id_ID').format(date);
+            // print('Tanggal yang dipilih: $_selectedDate');
+            String formattedDate = DateFormat.yMMMMEEEEd('id_ID').format(date);
+            print('Tanggal yang dipilih: $formattedDate');
             print('Tanggal yang dipilih: $_selectedDate');
           });
         },
@@ -350,6 +353,8 @@ class _HomePageState extends State<HomePage> {
                           }
                           await _tugasService.updateTugas(selectedTask);
                           Navigator.pop(context);
+                          _showSuccessSnackBar(
+                              const Text('Status Tugas Berhasil Diperbarui'));
                           setState(() {});
                           print(
                               'Tugas "${selectedTask.namaTugas}" telah diperbarui.');
@@ -385,7 +390,6 @@ class _HomePageState extends State<HomePage> {
                               builder: (context) => EditTask(task: tugas),
                             ),
                           ).then((_) {
-                            // Pembaruan data hanya dilakukan setelah selesai mengedit tugas
                             getAllTugas();
                           });
                         } else {
@@ -406,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                         getAllTugas();
                         Navigator.pop(context);
                         _showSuccessSnackBar(
-                            const Text('Berhasil Menghapus Data'));
+                            const Text('Berhasil Menghapus Tugas'));
                       } catch (e) {
                         print(
                             'Terjadi kesalahan saat menghapus data tugas: $e');
